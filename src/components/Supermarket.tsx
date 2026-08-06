@@ -226,35 +226,56 @@ export const Supermarket: React.FC = () => {
         try {
           const base64String = (reader.result as string).split(',')[1];
           const ai = new GoogleGenAI({ apiKey: apiKey });
-          const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: [
-              {
-                inlineData: {
-                  data: base64String,
-                  mimeType: file.type || 'image/jpeg'
-                },
-              },
-              {
-                text: `Analise esta nota fiscal de supermercado e extraia os itens comprados.
-                Retorne APENAS um JSON com o seguinte formato, sem formatação markdown ou texto adicional:
-                {
-                  "items": [
-                    {
-                      "name": "Nome do item",
-                      "category": "Categoria (ex: lanche, cb, Proteína, Higiene, Limpeza, Bebida, Besteira)",
-                      "quantity": 1,
-                      "unitPrice": 10.50
-                    }
-                  ]
-                }
-                Regras:
-                1. Se for um item pesado (ex: 0,632 kg), defina quantity como 1 e unitPrice como o valor TOTAL pago pelo item.`
-              },
-            ],
-          });
+          const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+          let response: any = null;
+          let lastError: any = null;
 
-          const text = response.text || '{}';
+          for (const modelName of modelsToTry) {
+            try {
+              response = await ai.models.generateContent({
+                model: modelName,
+                contents: [
+                  {
+                    inlineData: {
+                      data: base64String,
+                      mimeType: file.type || 'image/jpeg'
+                    },
+                  },
+                  {
+                    text: `Analise esta nota fiscal de supermercado e extraia os itens comprados.
+                    Retorne APENAS um JSON com o seguinte formato, sem formatação markdown ou texto adicional:
+                    {
+                      "items": [
+                        {
+                          "name": "Nome do item",
+                          "category": "Categoria (ex: lanche, cb, Proteína, Higiene, Limpeza, Bebida, Besteira)",
+                          "quantity": 1,
+                          "unitPrice": 10.50
+                        }
+                      ]
+                    }
+                    Regras:
+                    1. Se for um item pesado (ex: 0,632 kg), defina quantity como 1 e unitPrice como o valor TOTAL pago pelo item.`
+                  },
+                ],
+              });
+              if (response && response.text) break;
+            } catch (modelErr: any) {
+              lastError = modelErr;
+              const errMsg = modelErr?.message || String(modelErr);
+              if (errMsg.includes('RESOURCE_EXHAUSTED') || modelErr?.status === 429) {
+                console.warn(`Modelo ${modelName} excedeu cota de requisições, tentando modelo alternativo...`);
+                continue;
+              }
+              throw modelErr;
+            }
+          }
+
+          if (!response && lastError) {
+            throw lastError;
+          }
+
+          const text = response?.text || '{}';
           const jsonMatch = text.match(/\{[\s\S]*\}/);
           
           if (jsonMatch) {
@@ -300,7 +321,12 @@ export const Supermarket: React.FC = () => {
         } catch (error: any) {
           console.error("Supermarket OCR error:", error);
           const errMsg = error?.message || String(error);
-          if (errMsg.includes('API_KEY_SERVICE_BLOCKED') || errMsg.includes('PERMISSION_DENIED') || error?.status === 403) {
+          if (errMsg.includes('RESOURCE_EXHAUSTED') || error?.status === 429) {
+            localStorage.removeItem('organizae_gemini_api_key');
+            setCustomApiKeyInput('');
+            setShowApiKeyModal(true);
+            setAlertMessage('A sua chave API atingiu o limite de cota gratuita do Google (limit: 0). Por favor, gere uma nova chave gratuita no Google AI Studio e informe abaixo.');
+          } else if (errMsg.includes('API_KEY_SERVICE_BLOCKED') || errMsg.includes('PERMISSION_DENIED') || error?.status === 403) {
             localStorage.removeItem('organizae_gemini_api_key');
             setCustomApiKeyInput('');
             setShowApiKeyModal(true);

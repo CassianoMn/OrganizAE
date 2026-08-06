@@ -181,20 +181,41 @@ export const Transactions: React.FC = () => {
             ]
           }`;
 
-          const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: [
-              {
-                inlineData: {
-                  data: base64Data,
-                  mimeType: file.type || 'image/jpeg'
-                }
-              },
-              { text: prompt }
-            ]
-          });
+          const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+          let response: any = null;
+          let lastError: any = null;
 
-          const text = response.text;
+          for (const modelName of modelsToTry) {
+            try {
+              response = await ai.models.generateContent({
+                model: modelName,
+                contents: [
+                  {
+                    inlineData: {
+                      data: base64Data,
+                      mimeType: file.type || 'image/jpeg'
+                    }
+                  },
+                  { text: prompt }
+                ]
+              });
+              if (response && response.text) break;
+            } catch (modelErr: any) {
+              lastError = modelErr;
+              const errMsg = modelErr?.message || String(modelErr);
+              if (errMsg.includes('RESOURCE_EXHAUSTED') || modelErr?.status === 429) {
+                console.warn(`Modelo ${modelName} excedeu cota de requisições, tentando modelo alternativo...`);
+                continue;
+              }
+              throw modelErr;
+            }
+          }
+
+          if (!response && lastError) {
+            throw lastError;
+          }
+
+          const text = response?.text;
           if (text) {
             const jsonMatch = text.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
@@ -220,7 +241,12 @@ export const Transactions: React.FC = () => {
         } catch (err: any) {
           console.error("Gemini OCR error:", err);
           const errMsg = err?.message || String(err);
-          if (errMsg.includes('API_KEY_SERVICE_BLOCKED') || errMsg.includes('PERMISSION_DENIED') || err?.status === 403) {
+          if (errMsg.includes('RESOURCE_EXHAUSTED') || err?.status === 429) {
+            localStorage.removeItem('organizae_gemini_api_key');
+            setCustomApiKeyInput('');
+            setShowApiKeyModal(true);
+            setAlertMessage('A sua chave API atingiu o limite de cota gratuita do Google (limit: 0). Por favor, gere uma nova chave gratuita no Google AI Studio e informe abaixo.');
+          } else if (errMsg.includes('API_KEY_SERVICE_BLOCKED') || errMsg.includes('PERMISSION_DENIED') || err?.status === 403) {
             localStorage.removeItem('organizae_gemini_api_key');
             setCustomApiKeyInput('');
             setShowApiKeyModal(true);
