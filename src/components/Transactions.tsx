@@ -11,7 +11,7 @@ export const Transactions: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  
+
   const [newTx, setNewTx] = useState<Partial<Transaction>>({
     type: 'expense',
     date: new Date().toISOString().split('T')[0],
@@ -45,13 +45,13 @@ export const Transactions: React.FC = () => {
 
   const filterByPeriod = (tx: Transaction) => {
     if (selectedPeriod === 'all') return true;
-    
+
     const [year, part] = selectedPeriod.split('-');
     const txYear = tx.date.substring(0, 4);
     const txMonth = parseInt(tx.date.substring(5, 7), 10);
-    
+
     if (txYear !== year) return false;
-    
+
     if (part.startsWith('Q')) {
       const quarter = parseInt(part.substring(1), 10);
       return Math.ceil(txMonth / 3) === quarter;
@@ -131,10 +131,10 @@ export const Transactions: React.FC = () => {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const getGeminiApiKey = (): string | null => {
-    const envKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY') 
-      ? process.env.GEMINI_API_KEY 
+    const envKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY')
+      ? process.env.GEMINI_API_KEY
       : (process.env.VITE_GEMINI_API_KEY || process.env.CUSTOM_API_KEY || process.env.API_KEY);
-    
+
     if (envKey && envKey.trim().length > 0) return envKey.trim();
 
     const storedKey = localStorage.getItem('organizae_gemini_api_key');
@@ -164,7 +164,7 @@ export const Transactions: React.FC = () => {
         try {
           const base64Data = (reader.result as string).split(',')[1];
           const ai = new GoogleGenAI({ apiKey: apiKey });
-          
+
           const prompt = `Analise esta nota fiscal ou extrato bancário e extraia as transações.
           O período atual selecionado pelo usuário é ${selectedPeriod !== 'all' ? selectedPeriod : 'o mês atual'}.
           A data da transação deve ser a data atual (hoje) para cada nota lida, a menos que o extrato tenha datas específicas para cada transação.
@@ -181,35 +181,22 @@ export const Transactions: React.FC = () => {
             ]
           }`;
 
-          const modelsToTry = ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
-          let response: any = null;
-          let lastError: any = null;
 
-          for (const modelName of modelsToTry) {
-            try {
-              response = await ai.models.generateContent({
-                model: modelName,
-                contents: [
-                  {
-                    inlineData: {
-                      data: base64Data,
-                      mimeType: file.type || 'image/jpeg'
-                    }
-                  },
-                  { text: prompt }
-                ]
-              });
-              if (response && response.text) break;
-            } catch (modelErr: any) {
-              lastError = modelErr;
-              console.warn(`Modelo ${modelName} indisponível ou falhou, tentando modelo alternativo...`);
-              continue;
+          const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: {
+              parts: [
+                {
+                  inlineData: {
+                    data: base64Data,
+                    mimeType: file.type || 'image/jpeg'
+                  }
+                },
+                { text: prompt }
+              ]
             }
-          }
+          });
 
-          if (!response && lastError) {
-            throw lastError;
-          }
 
           const text = response?.text;
           if (text) {
@@ -351,7 +338,7 @@ export const Transactions: React.FC = () => {
           >
             <Key size={18} />
           </button>
-          <button 
+          <button
             onClick={() => {
               if (showAddForm && !editingId) {
                 resetForm();
@@ -379,10 +366,10 @@ export const Transactions: React.FC = () => {
           <form onSubmit={handleAddOrUpdate} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tipo</label>
-              <select 
+              <select
                 className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.type}
-                onChange={e => setNewTx({...newTx, type: e.target.value as 'expense' | 'income', category: ''})}
+                onChange={e => setNewTx({ ...newTx, type: e.target.value as 'expense' | 'income', category: '' })}
               >
                 <option value="expense">Despesa</option>
                 <option value="income">Renda</option>
@@ -390,41 +377,41 @@ export const Transactions: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data</label>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.date}
-                onChange={e => setNewTx({...newTx, date: e.target.value})}
+                onChange={e => setNewTx({ ...newTx, date: e.target.value })}
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Valor</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 step="0.01"
                 className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.amount || ''}
-                onChange={e => setNewTx({...newTx, amount: parseFloat(e.target.value)})}
+                onChange={e => setNewTx({ ...newTx, amount: parseFloat(e.target.value) })}
                 required
               />
             </div>
             <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Descrição</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.description}
-                onChange={e => setNewTx({...newTx, description: e.target.value})}
+                onChange={e => setNewTx({ ...newTx, description: e.target.value })}
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
-              <select 
+              <select
                 className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.category}
-                onChange={e => setNewTx({...newTx, category: e.target.value})}
+                onChange={e => setNewTx({ ...newTx, category: e.target.value })}
                 required
               >
                 <option value="">Selecione...</option>
@@ -459,14 +446,14 @@ export const Transactions: React.FC = () => {
             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Excluir Transação</h3>
             <p className="text-slate-600 dark:text-slate-300 mb-6">Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end gap-3">
-              <button 
-                onClick={() => setDeleteConfirmId(null)} 
+              <button
+                onClick={() => setDeleteConfirmId(null)}
                 className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
-              <button 
-                onClick={handleDelete} 
+              <button
+                onClick={handleDelete}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Excluir
@@ -483,8 +470,8 @@ export const Transactions: React.FC = () => {
             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Aviso</h3>
             <p className="text-slate-600 dark:text-slate-300 mb-6">{alertMessage}</p>
             <div className="flex justify-end">
-              <button 
-                onClick={() => setAlertMessage(null)} 
+              <button
+                onClick={() => setAlertMessage(null)}
                 className="px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
               >
                 OK
@@ -514,10 +501,10 @@ export const Transactions: React.FC = () => {
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
               Para ler notas fiscais e extratos com IA, insira sua chave da API do Google Gemini. Você pode gerar uma gratuitamente no{' '}
-              <a 
-                href="https://aistudio.google.com/app/apikey" 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noreferrer"
                 className="text-orange-600 dark:text-orange-400 underline font-medium"
               >
                 Google AI Studio
@@ -531,14 +518,14 @@ export const Transactions: React.FC = () => {
               className="w-full p-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 mb-6 text-sm"
             />
             <div className="flex justify-end gap-3">
-              <button 
-                onClick={() => { setShowApiKeyModal(false); setPendingFile(null); }} 
+              <button
+                onClick={() => { setShowApiKeyModal(false); setPendingFile(null); }}
                 className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-sm"
               >
                 Cancelar
               </button>
-              <button 
-                onClick={handleSaveApiKey} 
+              <button
+                onClick={handleSaveApiKey}
                 disabled={!customApiKeyInput.trim()}
                 className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white rounded-lg transition-colors text-sm font-medium"
               >
