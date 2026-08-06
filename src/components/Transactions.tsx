@@ -126,27 +126,44 @@ export const Transactions: React.FC = () => {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [customApiKeyInput, setCustomApiKeyInput] = useState('');
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
-    const apiKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY') 
+  const getGeminiApiKey = (): string | null => {
+    const envKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY') 
       ? process.env.GEMINI_API_KEY 
-      : (process.env.CUSTOM_API_KEY || process.env.API_KEY);
+      : (process.env.VITE_GEMINI_API_KEY || process.env.CUSTOM_API_KEY || process.env.API_KEY);
+    
+    if (envKey && envKey.trim().length > 0) return envKey.trim();
 
-    if (!apiKey) {
-      setAlertMessage('Chave API do Gemini não configurada.');
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      return;
+    const storedKey = localStorage.getItem('organizae_gemini_api_key');
+    if (storedKey && storedKey.trim().length > 0) return storedKey.trim();
+
+    return null;
+  };
+
+  const handleSaveApiKey = () => {
+    if (customApiKeyInput.trim()) {
+      const keyToSave = customApiKeyInput.trim();
+      localStorage.setItem('organizae_gemini_api_key', keyToSave);
+      setShowApiKeyModal(false);
+      if (pendingFile) {
+        const fileToProcess = pendingFile;
+        setPendingFile(null);
+        executeFileAnalysis(fileToProcess, keyToSave);
+      }
     }
+  };
 
+  const executeFileAnalysis = async (file: File, apiKey: string) => {
     setIsAnalyzing(true);
     try {
       const reader = new FileReader();
       reader.onloadend = async () => {
         try {
           const base64Data = (reader.result as string).split(',')[1];
-          const ai = new GoogleGenAI({ apiKey: apiKey as string });
+          const ai = new GoogleGenAI({ apiKey: apiKey });
           
           const prompt = `Analise esta nota fiscal ou extrato bancário e extraia as transações.
           O período atual selecionado pelo usuário é ${selectedPeriod !== 'all' ? selectedPeriod : 'o mês atual'}.
@@ -200,25 +217,40 @@ export const Transactions: React.FC = () => {
               setAlertMessage('Não foi possível extrair as transações da imagem.');
             }
           }
-        } catch (error) {
-          console.error("Error analyzing receipt:", error);
-          setAlertMessage(`Erro ao analisar a imagem: ${error instanceof Error ? error.message : String(error)}`);
+        } catch (err: any) {
+          console.error("Gemini OCR error:", err);
+          if (err?.message?.includes('API key') || err?.status === 400) {
+            localStorage.removeItem('organizae_gemini_api_key');
+            setAlertMessage('Chave API inválida. Por favor, insira uma chave válida.');
+          } else {
+            setAlertMessage(`Erro ao analisar arquivo: ${err?.message || 'Falha no processamento'}`);
+          }
         } finally {
           setIsAnalyzing(false);
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
+          if (fileInputRef.current) fileInputRef.current.value = '';
         }
       };
       reader.readAsDataURL(file);
-    } catch (error) {
-      console.error("Error analyzing receipt:", error);
-      setAlertMessage(`Erro ao analisar a imagem: ${error instanceof Error ? error.message : String(error)}`);
+    } catch (err) {
       setIsAnalyzing(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      setAlertMessage('Erro ao ler o arquivo.');
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const apiKey = getGeminiApiKey();
+    if (!apiKey) {
+      setPendingFile(file);
+      setCustomApiKeyInput('');
+      setShowApiKeyModal(true);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    await executeFileAnalysis(file, apiKey);
   };
 
   const renderTable = (data: Transaction[], type: 'expense' | 'income') => (
@@ -429,6 +461,50 @@ export const Transactions: React.FC = () => {
             <Loader2 size={48} className="text-slate-800 dark:text-slate-200 animate-spin mb-4" />
             <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Analisando Arquivo</h3>
             <p className="text-slate-600 dark:text-slate-300 text-center">Por favor, aguarde enquanto a inteligência artificial extrai as transações do seu arquivo...</p>
+          </div>
+        </div>
+      )}
+
+      {/* API Key Modal */}
+      {showApiKeyModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-md w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">
+              🔑 Configurar Chave API do Gemini
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+              Para ler notas fiscais e extratos com IA, insira sua chave da API do Google Gemini. Você pode gerar uma gratuitamente no{' '}
+              <a 
+                href="https://aistudio.google.com/app/apikey" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-orange-600 dark:text-orange-400 underline font-medium"
+              >
+                Google AI Studio
+              </a>.
+            </p>
+            <input
+              type="password"
+              placeholder="Cole sua Gemini API Key (ex: AIzaSy...)"
+              value={customApiKeyInput}
+              onChange={(e) => setCustomApiKeyInput(e.target.value)}
+              className="w-full p-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg outline-none focus:ring-2 focus:ring-orange-500 mb-6 text-sm"
+            />
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => { setShowApiKeyModal(false); setPendingFile(null); }} 
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-sm"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleSaveApiKey} 
+                disabled={!customApiKeyInput.trim()}
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white rounded-lg transition-colors text-sm font-medium"
+              >
+                Salvar e Continuar
+              </button>
+            </div>
           </div>
         </div>
       )}
