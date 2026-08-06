@@ -101,7 +101,7 @@ interface FinanceContextType {
   user: any;
   login: () => void;
   logout: () => void;
-  
+
   isDarkMode: boolean;
   toggleDarkMode: () => void;
 
@@ -111,15 +111,15 @@ interface FinanceContextType {
   transactions: Transaction[];
   budgets: Budget[];
   supermarketItems: SupermarketItem[];
-  
+
   addTransaction: (tx: Omit<Transaction, 'id' | 'userId' | 'groupId' | 'monthYear'>) => Promise<void>;
   updateTransaction: (id: string, tx: Partial<Transaction>) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
-  
+
   addSupermarketItem: (item: Omit<SupermarketItem, 'id' | 'userId' | 'groupId' | 'monthYear'>) => Promise<void>;
   updateSupermarketItem: (id: string, item: Partial<SupermarketItem>) => Promise<void>;
   deleteSupermarketItem: (id: string) => Promise<void>;
-  
+
   addBudget: (budget: Omit<Budget, 'id' | 'userId' | 'groupId'>) => Promise<void>;
   updateBudget: (id: string, budget: Partial<Budget>) => Promise<void>;
 }
@@ -151,7 +151,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, [isDarkMode]);
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
-  
+
   const [selectedPeriod, setSelectedPeriod] = useState<string>(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -213,7 +213,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
     const groupId = getGroupId(user.email, user.uid);
     const isShared = groupId !== user.uid;
 
-    const qTx = isShared 
+    const qTx = isShared
       ? query(collection(db, 'transactions'), or(where('groupId', '==', groupId), where('userId', '==', user.uid)))
       : query(collection(db, 'transactions'), where('groupId', '==', groupId));
 

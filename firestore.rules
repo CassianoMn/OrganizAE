@@ -84,3 +84,4 @@ service cloud.firestore {
     }
   }
 }
+// regras firestore

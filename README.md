@@ -1,4 +1,4 @@
-# OrganizAE 📊💰
+# OrganizAE
 
 **OrganizAE** é um sistema completo de gestão financeira pessoal e familiar desenvolvido em React, TypeScript, Tailwind CSS, Firebase e Inteligência Artificial (Google Gemini 2.5 Flash).
 
