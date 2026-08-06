@@ -8,11 +8,52 @@ interface LayoutProps {
   setActiveTab: (tab: string) => void;
 }
 
+const MONTH_NAMES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+];
+
 export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) => {
   const { user, login, logout, selectedPeriod, setSelectedPeriod } = useFinance();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
+  const periodOptions = React.useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years: number[] = [];
+    for (let y = currentYear + 2; y >= currentYear - 5; y--) {
+      years.push(y);
+    }
+
+    const opts: { value: string; label: string }[] = [
+      { value: 'all', label: 'Todo o período' }
+    ];
+
+    years.forEach((yr) => {
+      MONTH_NAMES.forEach((mName, idx) => {
+        const mStr = String(idx + 1).padStart(2, '0');
+        opts.push({
+          value: `${yr}-${mStr}`,
+          label: `${mName} ${yr}`
+        });
+      });
+      [1, 2, 3, 4].forEach(q => {
+        opts.push({
+          value: `${yr}-Q${q}`,
+          label: `${q}º Trimestre ${yr}`
+        });
+      });
+      [1, 2].forEach(s => {
+        opts.push({
+          value: `${yr}-S${s}`,
+          label: `${s}º Semestre ${yr}`
+        });
+      });
+    });
+
+    return opts;
+  }, []);
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 font-sans flex-col md:flex-row">
@@ -43,29 +84,15 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
             <div className="px-6 mb-6 mt-4 md:mt-0">
               <div className="text-sm text-slate-400 mb-1">Período</div>
               <select 
-                className="w-full bg-slate-800 text-white border-none rounded p-2 text-sm"
+                className="w-full bg-slate-800 text-white border-none rounded p-2 text-sm max-h-48 overflow-y-auto"
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
               >
-                <option value="all">Todo o período</option>
-                <option value="2026-Q1">1º Trimestre 2026</option>
-                <option value="2026-Q2">2º Trimestre 2026</option>
-                <option value="2026-Q3">3º Trimestre 2026</option>
-                <option value="2026-Q4">4º Trimestre 2026</option>
-                <option value="2026-S1">1º Semestre 2026</option>
-                <option value="2026-S2">2º Semestre 2026</option>
-                <option value="2026-01">Janeiro 2026</option>
-                <option value="2026-02">Fevereiro 2026</option>
-                <option value="2026-03">Março 2026</option>
-                <option value="2026-04">Abril 2026</option>
-                <option value="2026-05">Maio 2026</option>
-                <option value="2026-06">Junho 2026</option>
-                <option value="2026-07">Julho 2026</option>
-                <option value="2026-08">Agosto 2026</option>
-                <option value="2026-09">Setembro 2026</option>
-                <option value="2026-10">Outubro 2026</option>
-                <option value="2026-11">Novembro 2026</option>
-                <option value="2026-12">Dezembro 2026</option>
+                {periodOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
             </div>
             
