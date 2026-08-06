@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { useFinance, Transaction } from '../context/FinanceContext';
-import { Plus, Pencil, Trash2, X, Upload, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Upload, Loader2, Key } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 
 export const Transactions: React.FC = () => {
@@ -219,11 +219,19 @@ export const Transactions: React.FC = () => {
           }
         } catch (err: any) {
           console.error("Gemini OCR error:", err);
-          if (err?.message?.includes('API key') || err?.status === 400) {
+          const errMsg = err?.message || String(err);
+          if (errMsg.includes('API_KEY_SERVICE_BLOCKED') || errMsg.includes('PERMISSION_DENIED') || err?.status === 403) {
             localStorage.removeItem('organizae_gemini_api_key');
-            setAlertMessage('Chave API inválida. Por favor, insira uma chave válida.');
+            setCustomApiKeyInput('');
+            setShowApiKeyModal(true);
+            setAlertMessage('A chave API do Gemini informada está bloqueada ou sem permissão para o serviço Generative Language API. Por favor, crie uma nova chave gratuita no Google AI Studio e informe abaixo.');
+          } else if (errMsg.includes('API key') || err?.status === 400) {
+            localStorage.removeItem('organizae_gemini_api_key');
+            setCustomApiKeyInput('');
+            setShowApiKeyModal(true);
+            setAlertMessage('Chave API inválida. Por favor, insira uma nova chave válida.');
           } else {
-            setAlertMessage(`Erro ao analisar arquivo: ${err?.message || 'Falha no processamento'}`);
+            setAlertMessage(`Erro ao analisar arquivo: ${errMsg}`);
           }
         } finally {
           setIsAnalyzing(false);
@@ -310,6 +318,16 @@ export const Transactions: React.FC = () => {
           >
             {isAnalyzing ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
             <span>{isAnalyzing ? 'Analisando...' : 'Importar Extrato/Nota'}</span>
+          </button>
+          <button
+            onClick={() => {
+              setCustomApiKeyInput(localStorage.getItem('organizae_gemini_api_key') || '');
+              setShowApiKeyModal(true);
+            }}
+            className="flex items-center justify-center space-x-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg transition-colors"
+            title="Configurar Chave API do Gemini"
+          >
+            <Key size={18} />
           </button>
           <button 
             onClick={() => {
