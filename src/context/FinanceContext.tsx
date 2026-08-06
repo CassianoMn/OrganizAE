@@ -102,6 +102,9 @@ interface FinanceContextType {
   login: () => void;
   logout: () => void;
   
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+
   selectedPeriod: string;
   setSelectedPeriod: (period: string) => void;
 
@@ -126,6 +129,25 @@ const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<any>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('organizae_dark_mode');
+    if (saved !== null) {
+      return saved === 'true';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('organizae_dark_mode', String(isDarkMode));
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => setIsDarkMode(prev => !prev);
   
   const [selectedPeriod, setSelectedPeriod] = useState<string>(() => {
     const now = new Date();
@@ -338,6 +360,8 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
       user,
       login,
       logout,
+      isDarkMode,
+      toggleDarkMode,
       selectedPeriod,
       setSelectedPeriod,
       transactions,

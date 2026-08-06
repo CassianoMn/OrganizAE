@@ -225,30 +225,30 @@ export const Transactions: React.FC = () => {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b-2 border-slate-300">
-            <th className="text-left py-2 font-medium text-slate-600 w-24">Data</th>
-            <th className="text-left py-2 font-medium text-slate-600 w-24">Valor</th>
-            <th className="text-left py-2 font-medium text-slate-600">Descrição</th>
-            <th className="text-left py-2 font-medium text-slate-600 w-32">Categoria</th>
-            <th className="text-right py-2 font-medium text-slate-600 w-20">Ações</th>
+          <tr className="border-b-2 border-slate-300 dark:border-slate-700">
+            <th className="text-left py-2 font-medium text-slate-600 dark:text-slate-400 w-24">Data</th>
+            <th className="text-left py-2 font-medium text-slate-600 dark:text-slate-400 w-24">Valor</th>
+            <th className="text-left py-2 font-medium text-slate-600 dark:text-slate-400">Descrição</th>
+            <th className="text-left py-2 font-medium text-slate-600 dark:text-slate-400 w-32">Categoria</th>
+            <th className="text-right py-2 font-medium text-slate-600 dark:text-slate-400 w-20">Ações</th>
           </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={5} className="py-4 text-center text-slate-500">Nenhuma transação encontrada.</td>
+              <td colSpan={5} className="py-4 text-center text-slate-500 dark:text-slate-400">Nenhuma transação encontrada.</td>
             </tr>
           ) : data.map((tx) => (
-            <tr key={tx.id} className="border-b border-slate-100 border-dotted group">
-              <td className="py-2 text-slate-500">{formatDate(tx.date)}</td>
-              <td className="py-2 text-slate-700 font-medium">{formatCurrency(tx.amount)}</td>
-              <td className="py-2 text-slate-700">{tx.description}</td>
-              <td className="py-2 text-slate-500">{tx.category}</td>
+            <tr key={tx.id} className="border-b border-slate-100 dark:border-slate-800 border-dotted group hover:bg-slate-50 dark:hover:bg-slate-900/50">
+              <td className="py-2 text-slate-500 dark:text-slate-400">{formatDate(tx.date)}</td>
+              <td className="py-2 text-slate-700 dark:text-slate-200 font-medium">{formatCurrency(tx.amount)}</td>
+              <td className="py-2 text-slate-700 dark:text-slate-200">{tx.description}</td>
+              <td className="py-2 text-slate-500 dark:text-slate-400">{tx.category}</td>
               <td className="py-2 text-right opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleEdit(tx)} className="text-blue-500 hover:text-blue-700 mr-2 p-2">
+                <button onClick={() => handleEdit(tx)} className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 mr-2 p-2">
                   <Pencil size={16} />
                 </button>
-                <button onClick={() => setDeleteConfirmId(tx.id)} className="text-red-500 hover:text-red-700 p-2">
+                <button onClick={() => setDeleteConfirmId(tx.id)} className="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2">
                   <Trash2 size={16} />
                 </button>
               </td>
@@ -261,8 +261,8 @@ export const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4">
-        <h2 className="text-3xl font-bold text-slate-800">Transações</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
+        <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Transações</h2>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
           <input
             type="file"
@@ -274,7 +274,7 @@ export const Transactions: React.FC = () => {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isAnalyzing}
-            className="flex items-center justify-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto disabled:opacity-50"
+            className="flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto disabled:opacity-50"
           >
             {isAnalyzing ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
             <span>{isAnalyzing ? 'Analisando...' : 'Importar Extrato/Nota'}</span>
@@ -297,18 +297,18 @@ export const Transactions: React.FC = () => {
       </div>
 
       {showAddForm && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border mb-8 relative">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-8 relative">
           {editingId && (
-            <button onClick={resetForm} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+            <button onClick={resetForm} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
               <X size={20} />
             </button>
           )}
-          <h3 className="text-lg font-semibold mb-4">{editingId ? 'Editar Transação' : 'Adicionar Transação'}</h3>
+          <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-slate-100">{editingId ? 'Editar Transação' : 'Adicionar Transação'}</h3>
           <form onSubmit={handleAddOrUpdate} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tipo</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tipo</label>
               <select 
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.type}
                 onChange={e => setNewTx({...newTx, type: e.target.value as 'expense' | 'income', category: ''})}
               >
@@ -317,40 +317,40 @@ export const Transactions: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Data</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data</label>
               <input 
                 type="date" 
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.date}
                 onChange={e => setNewTx({...newTx, date: e.target.value})}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Valor</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Valor</label>
               <input 
                 type="number" 
                 step="0.01"
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.amount || ''}
                 onChange={e => setNewTx({...newTx, amount: parseFloat(e.target.value)})}
                 required
               />
             </div>
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Descrição</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Descrição</label>
               <input 
                 type="text" 
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.description}
                 onChange={e => setNewTx({...newTx, description: e.target.value})}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Categoria</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
               <select 
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newTx.category}
                 onChange={e => setNewTx({...newTx, category: e.target.value})}
                 required
@@ -362,7 +362,7 @@ export const Transactions: React.FC = () => {
               </select>
             </div>
             <div className="lg:col-span-6 flex justify-end mt-4">
-              <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-md hover:bg-slate-800 w-full sm:w-auto">
+              <button type="submit" className="bg-slate-900 dark:bg-slate-700 text-white px-6 py-2 rounded-md hover:bg-slate-800 dark:hover:bg-slate-600 w-full sm:w-auto">
                 {editingId ? 'Atualizar' : 'Salvar'}
               </button>
             </div>
@@ -372,24 +372,24 @@ export const Transactions: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <h3 className="text-2xl font-bold text-orange-600 mb-6">Despesas</h3>
+          <h3 className="text-2xl font-bold text-orange-600 dark:text-orange-500 mb-6">Despesas</h3>
           {renderTable(expenses, 'expense')}
         </div>
         <div>
-          <h3 className="text-2xl font-bold text-emerald-600 mb-6">Renda</h3>
+          <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-500 mb-6">Renda</h3>
           {renderTable(incomes, 'income')}
         </div>
       </div>
 
       {deleteConfirmId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Excluir Transação</h3>
-            <p className="text-slate-600 mb-6">Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.</p>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Excluir Transação</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end gap-3">
               <button 
                 onClick={() => setDeleteConfirmId(null)} 
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -407,13 +407,13 @@ export const Transactions: React.FC = () => {
       {/* Custom Alert Modal */}
       {alertMessage && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Aviso</h3>
-            <p className="text-slate-600 mb-6">{alertMessage}</p>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Aviso</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">{alertMessage}</p>
             <div className="flex justify-end">
               <button 
                 onClick={() => setAlertMessage(null)} 
-                className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors"
+                className="px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
               >
                 OK
               </button>
@@ -425,10 +425,10 @@ export const Transactions: React.FC = () => {
       {/* Loading Overlay */}
       {isAnalyzing && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white p-8 rounded-xl shadow-xl flex flex-col items-center max-w-sm w-full">
-            <Loader2 size={48} className="text-slate-800 animate-spin mb-4" />
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Analisando Arquivo</h3>
-            <p className="text-slate-600 text-center">Por favor, aguarde enquanto a inteligência artificial extrai as transações do seu arquivo...</p>
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl flex flex-col items-center max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <Loader2 size={48} className="text-slate-800 dark:text-slate-200 animate-spin mb-4" />
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Analisando Arquivo</h3>
+            <p className="text-slate-600 dark:text-slate-300 text-center">Por favor, aguarde enquanto a inteligência artificial extrai as transações do seu arquivo...</p>
           </div>
         </div>
       )}

@@ -304,8 +304,8 @@ export const Supermarket: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4">
-        <h2 className="text-3xl font-bold text-slate-800">Mercado</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
+        <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Mercado</h2>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
           <input 
             type="file" 
@@ -317,7 +317,7 @@ export const Supermarket: React.FC = () => {
           <button 
             onClick={() => fileInputRef.current?.click()}
             disabled={isAnalyzing}
-            className="flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 w-full sm:w-auto"
+            className="flex items-center justify-center space-x-2 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 w-full sm:w-auto"
           >
             {isAnalyzing ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
             <span>Ler Nota Fiscal</span>
@@ -339,7 +339,7 @@ export const Supermarket: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-amber-400 text-slate-900 rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center font-semibold text-lg shadow-sm gap-4">
+      <div className="bg-amber-400 dark:bg-amber-500 text-slate-900 rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center font-semibold text-lg shadow-sm gap-4">
         <div className="w-full md:w-auto">
           {selectedPeriod === 'all' ? 'Todo o período' : selectedPeriod}
         </div>
@@ -363,37 +363,37 @@ export const Supermarket: React.FC = () => {
       )}
 
       {showAddForm && !editingId && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border mb-8 relative">
-          <button onClick={resetForm} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-8 relative">
+          <button onClick={resetForm} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
             <X size={20} />
           </button>
-          <h3 className="text-lg font-semibold mb-4">Adicionar Item</h3>
+          <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-slate-100">Adicionar Item</h3>
           <form onSubmit={handleAddOrUpdate} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Data</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data</label>
               <input 
                 type="date" 
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newItem.date}
                 onChange={e => setNewItem({...newItem, date: e.target.value})}
                 required
               />
             </div>
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Item</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Item</label>
               <input 
                 type="text" 
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newItem.name}
                 onChange={e => setNewItem({...newItem, name: e.target.value})}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Categoria</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
               <input 
                 type="text" 
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newItem.category}
                 onChange={e => setNewItem({...newItem, category: e.target.value})}
                 placeholder="Ex: lanche, cb, Proteína"
@@ -401,29 +401,29 @@ export const Supermarket: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Quantidade</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Quantidade</label>
               <input 
                 type="number" 
                 min="1"
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newItem.quantity || ''}
-                onChange={e => setNewItem({...newItem, quantity: parseInt(e.target.value)})}
+                onChange={e => setNewItem({...newItem, quantity: parseInt(e.target.value, 10) || 1})}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Preço Unitário</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Preço Unitário</label>
               <input 
                 type="number" 
                 step="0.01"
-                className="w-full border rounded-md p-2"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                 value={newItem.unitPrice || ''}
-                onChange={e => setNewItem({...newItem, unitPrice: parseFloat(e.target.value)})}
+                onChange={e => setNewItem({...newItem, unitPrice: parseFloat(e.target.value) || 0})}
                 required
               />
             </div>
             <div className="lg:col-span-6 flex justify-end mt-4">
-              <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-md hover:bg-slate-800 w-full sm:w-auto">
+              <button type="submit" className="bg-slate-900 dark:bg-slate-700 text-white px-6 py-2 rounded-md hover:bg-slate-800 dark:hover:bg-slate-600 w-full sm:w-auto">
                 Salvar
               </button>
             </div>
@@ -434,37 +434,37 @@ export const Supermarket: React.FC = () => {
       {/* Edit Item Modal */}
       {editingId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-2xl w-full relative">
-            <button onClick={resetForm} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-2xl w-full relative border border-slate-200 dark:border-slate-800">
+            <button onClick={resetForm} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
               <X size={20} />
             </button>
-            <h3 className="text-xl font-bold text-slate-800 mb-6">Editar Item</h3>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-6">Editar Item</h3>
             <form onSubmit={handleAddOrUpdate} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Data</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data</label>
                 <input 
                   type="date" 
-                  className="w-full border rounded-md p-2"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                   value={newItem.date}
                   onChange={e => setNewItem({...newItem, date: e.target.value})}
                   required
                 />
               </div>
               <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Item</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Item</label>
                 <input 
                   type="text" 
-                  className="w-full border rounded-md p-2"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                   value={newItem.name}
                   onChange={e => setNewItem({...newItem, name: e.target.value})}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Categoria</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
                 <input 
                   type="text" 
-                  className="w-full border rounded-md p-2"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                   value={newItem.category}
                   onChange={e => setNewItem({...newItem, category: e.target.value})}
                   placeholder="Ex: lanche, cb, Proteína"
@@ -472,32 +472,32 @@ export const Supermarket: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Quantidade</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Quantidade</label>
                 <input 
                   type="number" 
                   min="1"
-                  className="w-full border rounded-md p-2"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                   value={newItem.quantity || ''}
-                  onChange={e => setNewItem({...newItem, quantity: parseInt(e.target.value)})}
+                  onChange={e => setNewItem({...newItem, quantity: parseInt(e.target.value, 10) || 1})}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Preço Unitário</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Preço Unitário</label>
                 <input 
                   type="number" 
                   step="0.01"
-                  className="w-full border rounded-md p-2"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2"
                   value={newItem.unitPrice || ''}
-                  onChange={e => setNewItem({...newItem, unitPrice: parseFloat(e.target.value)})}
+                  onChange={e => setNewItem({...newItem, unitPrice: parseFloat(e.target.value) || 0})}
                   required
                 />
               </div>
               <div className="lg:col-span-6 flex justify-end gap-3 mt-6">
-                <button type="button" onClick={resetForm} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                <button type="button" onClick={resetForm} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                   Cancelar
                 </button>
-                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
                   Atualizar Item
                 </button>
               </div>
@@ -507,8 +507,8 @@ export const Supermarket: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1 bg-white p-6 rounded-xl border shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-          <h3 className="text-xl font-bold text-slate-700 mb-4 self-start">Distribuição</h3>
+        <div className="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
+          <h3 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-4 self-start">Distribuição</h3>
           {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
@@ -541,19 +541,19 @@ export const Supermarket: React.FC = () => {
             const blockTotalAmount = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
             
             return (
-              <div key={date} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <h3 className="text-lg font-bold text-slate-800">Compra de {date.split('-').reverse().join('/')}</h3>
+              <div key={date} className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div className="bg-slate-50 dark:bg-slate-800/60 px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Compra de {date.split('-').reverse().join('/')}</h3>
                   <div className="flex items-center space-x-4">
                     <div className="text-right">
-                      <span className="text-sm text-slate-500 block">Total ({blockTotalQuantity} itens)</span>
-                      <span className="text-lg font-bold text-emerald-600">{formatCurrency(blockTotalAmount)}</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400 block">Total ({blockTotalQuantity} itens)</span>
+                      <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(blockTotalAmount)}</span>
                     </div>
-                    <div className="flex space-x-2 border-l pl-4 border-slate-300">
-                      <button onClick={() => handleEditBlock(date)} className="text-blue-500 hover:text-blue-700 p-2 bg-blue-50 rounded-lg transition-colors" title="Editar data do bloco">
+                    <div className="flex space-x-2 border-l pl-4 border-slate-300 dark:border-slate-700">
+                      <button onClick={() => handleEditBlock(date)} className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 p-2 bg-blue-50 dark:bg-blue-950/40 rounded-lg transition-colors" title="Editar data do bloco">
                         <Pencil size={18} />
                       </button>
-                      <button onClick={() => handleDeleteBlock(date)} className="text-red-500 hover:text-red-700 p-2 bg-red-50 rounded-lg transition-colors" title="Excluir bloco inteiro">
+                      <button onClick={() => handleDeleteBlock(date)} className="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2 bg-red-50 dark:bg-red-950/40 rounded-lg transition-colors" title="Excluir bloco inteiro">
                         <Trash2 size={18} />
                       </button>
                     </div>
@@ -561,7 +561,7 @@ export const Supermarket: React.FC = () => {
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left min-w-[600px]">
-                    <thead className="bg-emerald-50/50 text-emerald-800">
+                    <thead className="bg-emerald-50/50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300">
                       <tr>
                         <th className="py-3 px-6 font-semibold">Item</th>
                         <th className="py-3 px-6 font-semibold">Categoria</th>
@@ -573,17 +573,17 @@ export const Supermarket: React.FC = () => {
                     </thead>
                     <tbody>
                       {items.map(item => (
-                        <tr key={item.id} className="border-b border-slate-100 hover:bg-slate-50 group">
-                          <td className="py-2 px-6 text-slate-800">{item.name}</td>
-                          <td className="py-2 px-6 text-slate-600">{item.category}</td>
-                          <td className="py-2 px-6 text-right text-slate-800">{item.quantity}</td>
-                          <td className="py-2 px-6 text-right text-slate-600 whitespace-nowrap">{formatCurrency(item.unitPrice)}</td>
-                          <td className="py-2 px-6 text-right font-medium text-slate-800 whitespace-nowrap">{formatCurrency(item.quantity * item.unitPrice)}</td>
+                        <tr key={item.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 group">
+                          <td className="py-2 px-6 text-slate-800 dark:text-slate-200">{item.name}</td>
+                          <td className="py-2 px-6 text-slate-600 dark:text-slate-400">{item.category}</td>
+                          <td className="py-2 px-6 text-right text-slate-800 dark:text-slate-200">{item.quantity}</td>
+                          <td className="py-2 px-6 text-right text-slate-600 dark:text-slate-400 whitespace-nowrap">{formatCurrency(item.unitPrice)}</td>
+                          <td className="py-2 px-6 text-right font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">{formatCurrency(item.quantity * item.unitPrice)}</td>
                           <td className="py-2 px-6 text-right opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                            <button onClick={() => handleEdit(item)} className="text-blue-500 hover:text-blue-700 mr-2 p-1">
+                            <button onClick={() => handleEdit(item)} className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 mr-2 p-1">
                               <Pencil size={16} />
                             </button>
-                            <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:text-red-700 p-1">
+                            <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1">
                               <Trash2 size={16} />
                             </button>
                           </td>
@@ -597,17 +597,17 @@ export const Supermarket: React.FC = () => {
           })}
           
           {sortedDates.length === 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center text-slate-500">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-8 text-center text-slate-500 dark:text-slate-400">
               Nenhum item encontrado para este período.
             </div>
           )}
           
           {sortedDates.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex justify-between items-center">
-              <span className="text-lg font-bold text-slate-600">Total Geral do Período</span>
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 flex justify-between items-center">
+              <span className="text-lg font-bold text-slate-600 dark:text-slate-300">Total Geral do Período</span>
               <div className="text-right">
-                <span className="text-sm text-slate-500 block">{totalQuantity} itens</span>
-                <span className="text-2xl font-bold text-emerald-600">{formatCurrency(totalAmount)}</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400 block">{totalQuantity} itens</span>
+                <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totalAmount)}</span>
               </div>
             </div>
           )}
@@ -617,13 +617,13 @@ export const Supermarket: React.FC = () => {
       {/* Custom Alert Modal */}
       {alertMessage && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Aviso</h3>
-            <p className="text-slate-600 mb-6">{alertMessage}</p>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Aviso</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">{alertMessage}</p>
             <div className="flex justify-end">
               <button 
                 onClick={() => setAlertMessage(null)} 
-                className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors"
+                className="px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
               >
                 OK
               </button>
@@ -635,13 +635,13 @@ export const Supermarket: React.FC = () => {
       {/* Custom Delete Confirmation Modal */}
       {deleteConfirmId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Confirmar Exclusão</h3>
-            <p className="text-slate-600 mb-6">Tem certeza que deseja excluir este item?</p>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Confirmar Exclusão</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">Tem certeza que deseja excluir este item?</p>
             <div className="flex justify-end gap-3">
               <button 
                 onClick={() => setDeleteConfirmId(null)} 
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -659,13 +659,13 @@ export const Supermarket: React.FC = () => {
       {/* Block Delete Confirmation Modal */}
       {deleteBlockConfirmDate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Excluir Bloco de Compra</h3>
-            <p className="text-slate-600 mb-6">Tem certeza que deseja excluir TODOS os itens da compra do dia {deleteBlockConfirmDate.split('-').reverse().join('/')}?</p>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Excluir Bloco de Compra</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">Tem certeza que deseja excluir TODOS os itens da compra do dia {deleteBlockConfirmDate.split('-').reverse().join('/')}?</p>
             <div className="flex justify-end gap-3">
               <button 
                 onClick={() => setDeleteBlockConfirmDate(null)} 
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -683,28 +683,28 @@ export const Supermarket: React.FC = () => {
       {/* Block Edit Modal */}
       {editBlockDate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Editar Data da Compra</h3>
-            <p className="text-slate-600 mb-4">Alterar a data de todos os itens deste bloco.</p>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Editar Data da Compra</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-4">Alterar a data de todos os itens deste bloco.</p>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Nova Data</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nova Data</label>
               <input 
                 type="date" 
                 value={newBlockDate}
                 onChange={(e) => setNewBlockDate(e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                className="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
               />
             </div>
             <div className="flex justify-end gap-3">
               <button 
                 onClick={() => setEditBlockDate(null)} 
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
               <button 
                 onClick={confirmEditBlock} 
-                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
                 disabled={!newBlockDate}
               >
                 Salvar
@@ -717,10 +717,10 @@ export const Supermarket: React.FC = () => {
       {/* Loading Overlay */}
       {isAnalyzing && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white p-8 rounded-xl shadow-xl flex flex-col items-center max-w-sm w-full">
-            <Loader2 size={48} className="text-slate-800 animate-spin mb-4" />
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Lendo Nota Fiscal</h3>
-            <p className="text-slate-600 text-center">Por favor, aguarde enquanto a inteligência artificial extrai os itens da sua nota fiscal...</p>
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl flex flex-col items-center max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <Loader2 size={48} className="text-slate-800 dark:text-slate-200 animate-spin mb-4" />
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Lendo Nota Fiscal</h3>
+            <p className="text-slate-600 dark:text-slate-300 text-center">Por favor, aguarde enquanto a inteligência artificial extrai os itens da sua nota fiscal...</p>
           </div>
         </div>
       )}

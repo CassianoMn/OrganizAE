@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'rechar
 import { Plus, Save, X } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
-  const { transactions, budgets, selectedPeriod, addBudget, updateBudget } = useFinance();
+  const { transactions, budgets, selectedPeriod, addBudget, updateBudget, isDarkMode } = useFinance();
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [editingInitialBalance, setEditingInitialBalance] = useState(0);
   const [editingCategories, setEditingCategories] = useState<BudgetCategory[]>([]);
@@ -198,22 +198,22 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b pb-4 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-orange-600">Visão Geral</h2>
-          <p className="text-slate-500 mt-1">
+          <h2 className="text-3xl font-bold text-orange-600 dark:text-orange-500">Visão Geral</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             {selectedPeriod === 'all' ? 'Todo o período' : selectedPeriod}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
           <div className="flex items-center space-x-2 text-sm w-full sm:w-auto justify-between sm:justify-start">
-            <span className="font-medium text-slate-600">Saldo inicial:</span>
-            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded font-semibold">{formatCurrency(initialBalance)}</span>
+            <span className="font-medium text-slate-600 dark:text-slate-400">Saldo inicial:</span>
+            <span className="bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-300 px-3 py-1 rounded font-semibold">{formatCurrency(initialBalance)}</span>
           </div>
           {isSpecificMonth && (
             <button 
               onClick={isEditingBudget ? handleSaveBudget : handleEditBudget}
-              className="flex items-center justify-center space-x-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
+              className="flex items-center justify-center space-x-2 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
             >
               {isEditingBudget ? <Save size={18} /> : <Plus size={18} />}
               <span>{isEditingBudget ? 'Salvar Orçamento' : (currentBudget ? 'Editar Orçamento' : 'Criar Orçamento')}</span>
@@ -223,20 +223,20 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {isEditingBudget ? (
-        <div className="bg-white p-6 rounded-xl shadow-sm border mb-8">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-slate-800">Editar Orçamento: {selectedPeriod}</h3>
-            <button onClick={() => setIsEditingBudget(false)} className="text-slate-400 hover:text-slate-600">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Editar Orçamento: {selectedPeriod}</h3>
+            <button onClick={() => setIsEditingBudget(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
               <X size={24} />
             </button>
           </div>
           
           <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-700 mb-1">Saldo Inicial</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Saldo Inicial</label>
             <input 
               type="number" 
               step="0.01"
-              className="border rounded-md p-2 w-full sm:max-w-xs"
+              className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-2 w-full sm:max-w-xs"
               value={editingInitialBalance}
               onChange={e => setEditingInitialBalance(parseFloat(e.target.value) || 0)}
             />
@@ -245,19 +245,19 @@ export const Dashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h4 className="font-semibold text-orange-600">Categorias de Despesa</h4>
-                <button onClick={() => handleAddCategory('expense')} className="text-sm text-blue-600 hover:underline flex items-center">
+                <h4 className="font-semibold text-orange-600 dark:text-orange-400">Categorias de Despesa</h4>
+                <button onClick={() => handleAddCategory('expense')} className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center">
                   <Plus size={14} className="mr-1" /> Adicionar
                 </button>
               </div>
               <div className="space-y-3">
                 {editingCategories.map((cat, idx) => cat.type === 'expense' && (
                   <div key={idx} className="flex items-center space-x-2">
-                    <span className="w-24 sm:w-32 truncate text-sm sm:text-base">{cat.name}</span>
+                    <span className="w-24 sm:w-32 truncate text-sm sm:text-base text-slate-700 dark:text-slate-300">{cat.name}</span>
                     <input 
                       type="number" 
                       step="0.01"
-                      className="border rounded-md p-1 flex-1 w-full"
+                      className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-1 flex-1 w-full"
                       value={cat.planned || ''}
                       onChange={e => handleUpdateCategory(idx, parseFloat(e.target.value) || 0)}
                     />
@@ -271,19 +271,19 @@ export const Dashboard: React.FC = () => {
             
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h4 className="font-semibold text-emerald-600">Categorias de Renda</h4>
-                <button onClick={() => handleAddCategory('income')} className="text-sm text-blue-600 hover:underline flex items-center">
+                <h4 className="font-semibold text-emerald-600 dark:text-emerald-400">Categorias de Renda</h4>
+                <button onClick={() => handleAddCategory('income')} className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center">
                   <Plus size={14} className="mr-1" /> Adicionar
                 </button>
               </div>
               <div className="space-y-3">
                 {editingCategories.map((cat, idx) => cat.type === 'income' && (
                   <div key={idx} className="flex items-center space-x-2">
-                    <span className="w-24 sm:w-32 truncate text-sm sm:text-base">{cat.name}</span>
+                    <span className="w-24 sm:w-32 truncate text-sm sm:text-base text-slate-700 dark:text-slate-300">{cat.name}</span>
                     <input 
                       type="number" 
                       step="0.01"
-                      className="border rounded-md p-1 flex-1 w-full"
+                      className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md p-1 flex-1 w-full"
                       value={cat.planned || ''}
                       onChange={e => handleUpdateCategory(idx, parseFloat(e.target.value) || 0)}
                     />
@@ -299,11 +299,11 @@ export const Dashboard: React.FC = () => {
       ) : (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="border-none shadow-none bg-transparent">
+            <Card className="border-none shadow-none bg-transparent dark:bg-transparent">
               <CardContent className="h-64 pt-6 px-0 sm:px-6">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={balanceData} margin={{ top: 20, right: 10, left: 10, bottom: 5 }}>
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#475569', fontWeight: 600, fontSize: 10 }} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: isDarkMode ? '#94a3b8' : '#475569', fontWeight: 600, fontSize: 10 }} />
                     <Tooltip cursor={{fill: 'transparent'}} formatter={(value: number) => formatCurrency(value)} />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={40}>
                       {balanceData.map((entry, index) => (
@@ -313,58 +313,58 @@ export const Dashboard: React.FC = () => {
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="flex justify-around mt-2 text-xs sm:text-sm font-medium">
-                  <span className="text-slate-500">{formatCurrency(initialBalance)}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{formatCurrency(initialBalance)}</span>
                   <span className="text-orange-500">{formatCurrency(finalBalance)}</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-100 border-none flex flex-col justify-center items-center text-center p-6 sm:p-8">
+            <Card className="bg-slate-100 dark:bg-slate-900 border-none flex flex-col justify-center items-center text-center p-6 sm:p-8">
               <div className="space-y-2 mt-6">
-                <div className={`text-3xl sm:text-4xl font-light ${savings >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                <div className={`text-3xl sm:text-4xl font-light ${savings >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                   {formatCurrency(savings)}
                 </div>
-                <div className="text-sm text-slate-500 italic">Economia no período</div>
+                <div className="text-sm text-slate-500 dark:text-slate-400 italic">Economia no período</div>
               </div>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mt-8">
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-slate-800">Despesas</h3>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Despesas</h3>
               <div className="space-y-3">
                 <div className="flex items-center">
-                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600">Planejado</span>
+                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600 dark:text-slate-400">Planejado</span>
                   <span className="w-24 sm:w-28 text-xs sm:text-sm font-medium">{formatCurrency(totalPlannedExpenses)}</span>
-                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 rounded overflow-hidden">
-                    <div className="h-full bg-slate-400" style={{ width: '100%' }}></div>
+                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 dark:bg-slate-800 rounded overflow-hidden">
+                    <div className="h-full bg-slate-400 dark:bg-slate-600" style={{ width: '100%' }}></div>
                   </div>
                 </div>
                 <div className="flex items-center">
-                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600">Real</span>
+                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600 dark:text-slate-400">Real</span>
                   <span className="w-24 sm:w-28 text-xs sm:text-sm font-medium">{formatCurrency(totalExpenses)}</span>
-                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 rounded overflow-hidden">
-                    <div className={`h-full ${totalExpenses > totalPlannedExpenses ? 'bg-red-500' : 'bg-slate-700'}`} style={{ width: `${Math.min(100, totalPlannedExpenses ? (totalExpenses / totalPlannedExpenses) * 100 : 100)}%` }}></div>
+                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 dark:bg-slate-800 rounded overflow-hidden">
+                    <div className={`h-full ${totalExpenses > totalPlannedExpenses ? 'bg-red-500' : 'bg-slate-700 dark:bg-slate-400'}`} style={{ width: `${Math.min(100, totalPlannedExpenses ? (totalExpenses / totalPlannedExpenses) * 100 : 100)}%` }}></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-slate-800">Renda</h3>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Renda</h3>
               <div className="space-y-3">
                 <div className="flex items-center">
-                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600">Planejado</span>
+                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600 dark:text-slate-400">Planejado</span>
                   <span className="w-24 sm:w-28 text-xs sm:text-sm font-medium">{formatCurrency(totalPlannedIncome)}</span>
-                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 rounded overflow-hidden">
-                    <div className="h-full bg-slate-400" style={{ width: '100%' }}></div>
+                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 dark:bg-slate-800 rounded overflow-hidden">
+                    <div className="h-full bg-slate-400 dark:bg-slate-600" style={{ width: '100%' }}></div>
                   </div>
                 </div>
                 <div className="flex items-center">
-                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600">Real</span>
+                  <span className="w-20 sm:w-24 text-xs sm:text-sm text-slate-600 dark:text-slate-400">Real</span>
                   <span className="w-24 sm:w-28 text-xs sm:text-sm font-medium">{formatCurrency(totalIncome)}</span>
-                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 rounded overflow-hidden">
-                    <div className={`h-full ${totalIncome < totalPlannedIncome ? 'bg-red-500' : 'bg-emerald-600'}`} style={{ width: `${Math.min(100, totalPlannedIncome ? (totalIncome / totalPlannedIncome) * 100 : 100)}%` }}></div>
+                  <div className="flex-1 h-4 sm:h-6 bg-slate-200 dark:bg-slate-800 rounded overflow-hidden">
+                    <div className={`h-full ${totalIncome < totalPlannedIncome ? 'bg-red-500' : 'bg-emerald-600 dark:bg-emerald-500'}`} style={{ width: `${Math.min(100, totalPlannedIncome ? (totalIncome / totalPlannedIncome) * 100 : 100)}%` }}></div>
                   </div>
                 </div>
               </div>
@@ -373,31 +373,31 @@ export const Dashboard: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 pt-8">
             <div>
-              <h3 className="text-2xl font-bold text-orange-600 mb-4">Despesas</h3>
+              <h3 className="text-2xl font-bold text-orange-600 dark:text-orange-500 mb-4">Despesas</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm min-w-[300px]">
                   <thead>
-                    <tr className="border-b-2 border-slate-300">
-                      <th className="text-left py-2 font-medium text-slate-600">Categoria</th>
-                      <th className="text-right py-2 font-medium text-slate-600">Planejado</th>
-                      <th className="text-right py-2 font-medium text-slate-600">Real</th>
-                      <th className="text-right py-2 font-medium text-slate-600">Diferença</th>
+                    <tr className="border-b-2 border-slate-300 dark:border-slate-700">
+                      <th className="text-left py-2 font-medium text-slate-600 dark:text-slate-400">Categoria</th>
+                      <th className="text-right py-2 font-medium text-slate-600 dark:text-slate-400">Planejado</th>
+                      <th className="text-right py-2 font-medium text-slate-600 dark:text-slate-400">Real</th>
+                      <th className="text-right py-2 font-medium text-slate-600 dark:text-slate-400">Diferença</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b bg-slate-50 font-semibold">
-                      <td className="py-2">Totais</td>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-semibold">
+                      <td className="py-2 text-slate-800 dark:text-slate-200">Totais</td>
                       <td className="text-right text-orange-500">{formatCurrency(totalPlannedExpenses)}</td>
-                      <td className="text-right text-slate-700">{formatCurrency(totalExpenses)}</td>
+                      <td className="text-right text-slate-700 dark:text-slate-300">{formatCurrency(totalExpenses)}</td>
                       <td className={`text-right ${totalPlannedExpenses - totalExpenses < 0 ? 'text-red-500' : 'text-emerald-500'}`}>
                         {formatCurrency(totalPlannedExpenses - totalExpenses)}
                       </td>
                     </tr>
                     {expenseData.map((row, i) => (
-                      <tr key={row.name} className={`border-b border-slate-100 ${i % 2 === 0 ? 'bg-orange-50/30' : ''}`}>
-                        <td className="py-2 font-medium text-slate-700">{row.name}</td>
-                        <td className="text-right text-slate-500">{formatCurrency(row.planned)}</td>
-                        <td className="text-right text-slate-700">{formatCurrency(row.real)}</td>
+                      <tr key={row.name} className={`border-b border-slate-100 dark:border-slate-800 ${i % 2 === 0 ? 'bg-orange-50/30 dark:bg-orange-950/20' : ''}`}>
+                        <td className="py-2 font-medium text-slate-700 dark:text-slate-300">{row.name}</td>
+                        <td className="text-right text-slate-500 dark:text-slate-400">{formatCurrency(row.planned)}</td>
+                        <td className="text-right text-slate-700 dark:text-slate-300">{formatCurrency(row.real)}</td>
                         <td className={`text-right ${row.diff < 0 ? 'text-red-500' : 'text-emerald-500'}`}>
                           {row.diff < 0 ? '-' : ''}{formatCurrency(Math.abs(row.diff))}
                         </td>
@@ -409,31 +409,31 @@ export const Dashboard: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-2xl font-bold text-emerald-600 mb-4">Renda</h3>
+              <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-500 mb-4">Renda</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm min-w-[300px]">
                   <thead>
-                    <tr className="border-b-2 border-slate-300">
-                      <th className="text-left py-2 font-medium text-slate-600">Categoria</th>
-                      <th className="text-right py-2 font-medium text-slate-600">Planejado</th>
-                      <th className="text-right py-2 font-medium text-slate-600">Real</th>
-                      <th className="text-right py-2 font-medium text-slate-600">Diferença</th>
+                    <tr className="border-b-2 border-slate-300 dark:border-slate-700">
+                      <th className="text-left py-2 font-medium text-slate-600 dark:text-slate-400">Categoria</th>
+                      <th className="text-right py-2 font-medium text-slate-600 dark:text-slate-400">Planejado</th>
+                      <th className="text-right py-2 font-medium text-slate-600 dark:text-slate-400">Real</th>
+                      <th className="text-right py-2 font-medium text-slate-600 dark:text-slate-400">Diferença</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b bg-slate-50 font-semibold">
-                      <td className="py-2">Totais</td>
-                      <td className="text-right text-emerald-600">{formatCurrency(totalPlannedIncome)}</td>
-                      <td className="text-right text-slate-700">{formatCurrency(totalIncome)}</td>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-semibold">
+                      <td className="py-2 text-slate-800 dark:text-slate-200">Totais</td>
+                      <td className="text-right text-emerald-600 dark:text-emerald-400">{formatCurrency(totalPlannedIncome)}</td>
+                      <td className="text-right text-slate-700 dark:text-slate-300">{formatCurrency(totalIncome)}</td>
                       <td className={`text-right ${totalIncome - totalPlannedIncome < 0 ? 'text-red-500' : 'text-emerald-500'}`}>
                         {formatCurrency(totalIncome - totalPlannedIncome)}
                       </td>
                     </tr>
                     {incomeData.map((row, i) => (
-                      <tr key={row.name} className={`border-b border-slate-100 ${i % 2 === 0 ? 'bg-emerald-50/30' : ''}`}>
-                        <td className="py-2 font-medium text-slate-700">{row.name}</td>
-                        <td className="text-right text-slate-500">{formatCurrency(row.planned)}</td>
-                        <td className="text-right text-slate-700">{formatCurrency(row.real)}</td>
+                      <tr key={row.name} className={`border-b border-slate-100 dark:border-slate-800 ${i % 2 === 0 ? 'bg-emerald-50/30 dark:bg-emerald-950/20' : ''}`}>
+                        <td className="py-2 font-medium text-slate-700 dark:text-slate-300">{row.name}</td>
+                        <td className="text-right text-slate-500 dark:text-slate-400">{formatCurrency(row.planned)}</td>
+                        <td className="text-right text-slate-700 dark:text-slate-300">{formatCurrency(row.real)}</td>
                         <td className={`text-right ${row.diff < 0 ? 'text-red-500' : 'text-emerald-500'}`}>
                           {row.diff < 0 ? '-' : ''}{formatCurrency(Math.abs(row.diff))}
                         </td>
@@ -450,13 +450,13 @@ export const Dashboard: React.FC = () => {
       {/* Custom Alert Modal */}
       {alertMessage && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Aviso</h3>
-            <p className="text-slate-600 mb-6">{alertMessage}</p>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Aviso</h3>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">{alertMessage}</p>
             <div className="flex justify-end">
               <button 
                 onClick={() => setAlertMessage(null)} 
-                className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors"
+                className="px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
               >
                 OK
               </button>
@@ -468,8 +468,8 @@ export const Dashboard: React.FC = () => {
       {/* Custom Prompt Modal */}
       {promptData.isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold text-slate-800 mb-2">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">
               Nova Categoria de {promptData.type === 'expense' ? 'Despesa' : 'Renda'}
             </h3>
             <input
@@ -479,18 +479,18 @@ export const Dashboard: React.FC = () => {
               value={promptData.value}
               onChange={(e) => setPromptData({ ...promptData, value: e.target.value })}
               onKeyDown={(e) => e.key === 'Enter' && confirmAddCategory()}
-              className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none mb-6"
+              className="w-full p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none mb-6"
             />
             <div className="flex justify-end gap-3">
               <button 
                 onClick={() => setPromptData({ isOpen: false, type: 'expense', value: '' })} 
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
               <button 
                 onClick={confirmAddCategory} 
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
               >
                 Adicionar
               </button>
