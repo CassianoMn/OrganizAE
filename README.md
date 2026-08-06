@@ -1,28 +1,44 @@
-# OrganizAE
+# OrganizAE 📊
 
-**OrganizAE** é um sistema completo de gestão financeira pessoal e familiar desenvolvido em React, TypeScript, Tailwind CSS, Firebase e Inteligência Artificial (Google Gemini 2.5 Flash).
+**OrganizAE** é um sistema completo e moderno de gestão financeira pessoal e familiar desenvolvido com **React**, **TypeScript**, **Tailwind CSS v4**, **Firebase** e **Inteligência Artificial (Google Gemini 2.0 Flash)**.
 
 ---
 
-## 🚀 Funcionalidades
+## 🌐 Produção e Acesso
+
+- **Site Web Oficial:** [https://organizae-a9590.web.app](https://organizae-a9590.web.app)
+- **Repositório GitHub:** [https://github.com/CassianoMn/OrganizAE](https://github.com/CassianoMn/OrganizAE)
+
+---
+
+## 🚀 Funcionalidades Principais
+
+- **🌙 Modo Escuro (Dark Mode Native)**
+  - Suporte completo ao Modo Claro e Modo Escuro com alternância por botão no menu (`Sun`/`Moon`).
+  - Salvamento automático da preferência do usuário no `localStorage`.
+
+- **📅 Seletor de Ano Único & Períodos Dinâmicos**
+  - Seleção simples de ano (padrão no ano atual).
+  - Opções dinâmicas personalizadas por ano: Mês específico, Trimestre (Q1 a Q4), Semestre (S1 e S2), Ano Completo ou Todo o Período.
 
 - **📊 Visão Geral & Orçamento (Dashboard)**
-  - Acompanhamento do Saldo Inicial, Saldo Final e Economia do período.
-  - Orçamentos planejados vs. despesas/rendas reais por categoria.
-  - Gráficos visuais com Recharts para visualização instantânea da saúde financeira.
-  - Filtros por período (Mês específico, Trimestre, Semestre ou Todo o período).
+  - Acompanhamento de Saldo Inicial, Saldo Final e Economia do período selecionado.
+  - Orçamentos planejados vs. Despesas e Rendas reais categorizadas.
+  - Gráficos interativos com **Recharts** para análise visual da saúde financeira.
 
-- **🧾 Gestão de Transações**
-  - Registro de Despesas e Rendas com categorias personalizadas.
-  - **Importação com IA (Gemini 2.5 Flash)**: Faça upload da foto de extratos ou notas fiscais e a IA extrai automaticamente as transações, valores, categorias e datas.
+- **🧾 Gestão de Transações com OCR por IA**
+  - Registro e edição de Despesas e Rendas com categorias personalizadas.
+  - **Importação com IA (Google Gemini 2.0 Flash)**: Envie a foto de extratos ou notas fiscais e a IA extrai automaticamente estabelecimentos, valores, categorias e datas.
+  - **Sistema de Fallback e Resiliência**: Fallback automático entre modelos (`gemini-2.0-flash`, `gemini-2.0-flash-lite`) em caso de limites de cota ou indisponibilidade temporária.
+  - **Modal Interativo de Chave API (🔑)**: Permite inserir ou atualizar a Gemini API Key diretamente na interface web sem a necessidade de reconstruir a aplicação.
 
-- **🛒 Módulo de Mercado**
-  - Controle detalhado de compras de supermercado com cálculo de itens e distribuição por categorias (Lanche, Proteína, Limpeza, etc.).
-  - **Leitura Inteligente de Nota Fiscal**: Envie a foto da nota fiscal do supermercado e a IA adiciona os itens e o total de despesa automaticamente.
+- **🛒 Módulo de Mercado Inteligente**
+  - Controle detalhado de compras de supermercado com cálculo de itens e divisão por categorias (*Proteína, Higiene, Limpeza, Bebida, Lanche, etc.*).
+  - **Leitura de Nota Fiscal de Mercado**: Adiciona todos os itens, quantidades, preços unitários e cria o lançamento financeiro correspondente automaticamente.
 
-- **🔐 Autenticação e Segurança**
-  - Login seguro com Google via **Firebase Authentication**.
-  - Regras de segurança no servidor (**Firestore Security Rules**) com isolamento de dados por usuário e suporte a grupos de finanças compartilhadas.
+- **🔐 Autenticação e Segurança em Nuvem**
+  - Autenticação via Google (**Firebase Authentication**).
+  - Sincronização em tempo real via **Firebase Firestore** com regras de segurança (*Firestore Security Rules*) por usuário e grupo familiar compartilhado.
 
 ---
 
@@ -30,11 +46,12 @@
 
 - **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, Lucide Icons, Recharts.
 - **Backend & Banco de Dados**: Firebase Firestore & Firebase Auth.
-- **Inteligência Artificial**: Google GenAI SDK (`@google/genai` - Gemini 2.5 Flash).
+- **Hospedagem & Deploy**: Firebase Hosting.
+- **Inteligência Artificial**: Google GenAI SDK (`@google/genai` - Gemini 2.0 Flash & Gemini 2.0 Flash Lite).
 
 ---
 
-## 📦 Como Rodar o Projeto
+## 📦 Como Rodar o Projeto Localmente
 
 ### Pré-requisitos
 - Node.js instalado (versão 18+)
@@ -44,7 +61,7 @@
 1. **Clonar o repositório:**
    ```bash
    git clone https://github.com/CassianoMn/OrganizAE.git
-   cd OrganizAE
+   cd OrganizAE/code
    ```
 
 2. **Instalar as dependências:**
@@ -52,8 +69,8 @@
    npm install
    ```
 
-3. **Configurar as Variáveis de Ambiente:**
-   Crie um arquivo `.env` na raiz do projeto contendo sua chave da API do Gemini:
+3. **Configurar as Variáveis de Ambiente (Opcional):**
+   Você pode criar um arquivo `.env` na raiz do código ou simplesmente informar sua chave diretamente na tela da aplicação pelo botão 🔑:
    ```env
    GEMINI_API_KEY="SUA_CHAVE_API_GEMINI"
    ```
@@ -62,11 +79,22 @@
    ```bash
    npm run dev
    ```
-   Acesse a aplicação no navegador em `http://localhost:3000`.
+   Acesse a aplicação localmente no navegador.
 
 ---
 
-## 🔒 Segurança e Boas Práticas
+## 🚀 Como Fazer o Deploy para Produção
 
-- **Proteção de Dados**: As regras de segurança do Firestore garantem que apenas usuários autenticados e autorizados possam ler e alterar seus próprios dados.
-- **Segredos Protegidos**: Chaves de API privadas não são enviadas ao repositório via `.gitignore`.
+Para compilar e publicar atualizações no Firebase Hosting:
+
+```bash
+npm run build
+npx firebase-tools deploy --project organizae-a9590
+```
+
+---
+
+## 🔒 Segurança e Privacidade
+
+- **Proteção de Dados**: As regras de segurança do Firestore garantem que cada usuário e grupo acesse exclusivamente os seus próprios registros financeiros.
+- **Chave API Segura**: Chaves de API podem ser salvas localmente no navegador (`localStorage`) ou em variáveis de ambiente, nunca sendo expostas em código-fonte aberto.
