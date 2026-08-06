@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A financial transaction (income or expense)",
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number", "description": "The transaction amount" },
+        "category": { "type": "string", "description": "The category of the transaction" },
+        "date": { "type": "string", "description": "The date of the transaction (YYYY-MM-DD)" },
+        "description": { "type": "string", "description": "A brief description" },
+        "type": { "type": "string", "enum": ["expense", "income"], "description": "Type of transaction" },
+        "userId": { "type": "string", "description": "The ID of the user who created this transaction" },
+        "groupId": { "type": "string", "description": "The ID of the group this transaction belongs to" },
+        "monthYear": { "type": "string", "description": "The month and year (YYYY-MM) for easier querying" }
+      },
+      "required": ["amount", "category", "date", "description", "type", "userId", "groupId", "monthYear"]
+    },
+    "SupermarketItem": {
+      "title": "SupermarketItem",
+      "description": "An item bought at the supermarket",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The name of the item" },
+        "category": { "type": "string", "description": "The category of the item" },
+        "quantity": { "type": "number", "description": "The quantity bought" },
+        "unitPrice": { "type": "number", "description": "The price per unit" },
+        "date": { "type": "string", "description": "The date of the purchase (YYYY-MM-DD)" },
+        "userId": { "type": "string", "description": "The ID of the user who created this item" },
+        "groupId": { "type": "string", "description": "The ID of the group this item belongs to" },
+        "monthYear": { "type": "string", "description": "The month and year (YYYY-MM) for easier querying" }
+      },
+      "required": ["name", "category", "quantity", "unitPrice", "date", "userId", "groupId", "monthYear"]
+    },
+    "Budget": {
+      "title": "Budget",
+      "description": "A monthly budget configuration",
+      "type": "object",
+      "properties": {
+        "monthYear": { "type": "string", "description": "The month and year (YYYY-MM)" },
+        "initialBalance": { "type": "number", "description": "The initial balance for the month" },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "planned": { "type": "number" },
+              "type": { "type": "string", "enum": ["expense", "income"] }
+            },
+            "required": ["name", "planned", "type"]
+          }
+        },
+        "userId": { "type": "string", "description": "The ID of the user who created this budget" },
+        "groupId": { "type": "string", "description": "The ID of the group this budget belongs to" }
+      },
+      "required": ["monthYear", "initialBalance", "categories", "userId", "groupId"]
+    }
+  },
+  "firestore": {
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Stores all transactions"
+    },
+    "/supermarketItems/{itemId}": {
+      "schema": { "$ref": "#/entities/SupermarketItem" },
+      "description": "Stores all supermarket items"
+    },
+    "/budgets/{budgetId}": {
+      "schema": { "$ref": "#/entities/Budget" },
+      "description": "Stores all monthly budgets"
+    }
+  }
+}

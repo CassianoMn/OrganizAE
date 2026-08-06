@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getGroupId() {
+      return (request.auth.token != null && 'email' in request.auth.token && (request.auth.token.email == 'cassianomenezes1@gmail.com' || request.auth.token.email == 'diovanamon@gmail.com')) 
+        ? 'shared_cassiano_diovana' 
+        : request.auth.uid;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && (
+        resource.data.groupId == getGroupId() || 
+        resource.data.userId == request.auth.uid
+      );
+    }
+    
+    function isNewDocOwner() {
+      return isAuthenticated() && request.resource.data.groupId == getGroupId();
+    }
+
+    function uidUnchanged() {
+      return (!('groupId' in request.resource.data) || request.resource.data.groupId == resource.data.groupId || request.resource.data.groupId == getGroupId()) &&
+             (!('userId' in request.resource.data) || request.resource.data.userId == resource.data.userId);
+    }
+
+    // Validation Functions
+    function isValidTransaction(data) {
+      return data.keys().hasAll(['amount', 'category', 'date', 'description', 'type', 'userId', 'groupId', 'monthYear']) &&
+             data.amount is number &&
+             data.category is string && data.category.size() > 0 && data.category.size() < 100 &&
+             data.date is string && data.date.matches("^\\d{4}-\\d{2}-\\d{2}$") &&
+             data.description is string && data.description.size() < 500 &&
+             data.type in ['expense', 'income'] &&
+             data.userId is string && data.userId.size() > 0 &&
+             data.groupId is string && data.groupId.size() > 0 &&
+             data.monthYear is string && data.monthYear.matches("^\\d{4}-\\d{2}$");
+    }
+
+    function isValidSupermarketItem(data) {
+      return data.keys().hasAll(['name', 'category', 'quantity', 'unitPrice', 'date', 'userId', 'groupId', 'monthYear']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.category is string && data.category.size() > 0 && data.category.size() < 100 &&
+             data.quantity is number && data.quantity > 0 &&
+             data.unitPrice is number && data.unitPrice >= 0 &&
+             data.date is string && data.date.matches("^\\d{4}-\\d{2}-\\d{2}$") &&
+             data.userId is string && data.userId.size() > 0 &&
+             data.groupId is string && data.groupId.size() > 0 &&
+             data.monthYear is string && data.monthYear.matches("^\\d{4}-\\d{2}$");
+    }
+
+    function isValidBudget(data) {
+      return data.keys().hasAll(['monthYear', 'initialBalance', 'categories', 'userId', 'groupId']) &&
+             data.monthYear is string && data.monthYear.matches("^\\d{4}-\\d{2}$") &&
+             data.initialBalance is number &&
+             data.categories is list && data.categories.size() <= 100 &&
+             data.userId is string && data.userId.size() > 0 &&
+             data.groupId is string && data.groupId.size() > 0;
+    }
+
+    match /transactions/{transactionId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner() && isValidTransaction(request.resource.data);
+      allow update: if isDocOwner() && uidUnchanged() && isValidTransaction(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /supermarketItems/{itemId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner() && isValidSupermarketItem(request.resource.data);
+      allow update: if isDocOwner() && uidUnchanged() && isValidSupermarketItem(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /budgets/{budgetId} {
+      allow read: if isDocOwner();
+      allow create: if isNewDocOwner() && isValidBudget(request.resource.data);
+      allow update: if isDocOwner() && uidUnchanged() && isValidBudget(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+  }
+}
