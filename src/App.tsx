@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
 import { FinanceProvider } from './context/FinanceContext';
 import { Layout } from './components/Layout';
@@ -11,6 +6,9 @@ import { Transactions } from './components/Transactions';
 import { Supermarket } from './components/Supermarket';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
+/**
+ * Main application component for OrganizAE
+ */
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
