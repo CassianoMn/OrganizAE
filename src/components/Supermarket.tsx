@@ -226,7 +226,7 @@ export const Supermarket: React.FC = () => {
         try {
           const base64String = (reader.result as string).split(',')[1];
           const ai = new GoogleGenAI({ apiKey: apiKey });
-          const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+          const modelsToTry = ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
           let response: any = null;
           let lastError: any = null;
 
@@ -262,12 +262,8 @@ export const Supermarket: React.FC = () => {
               if (response && response.text) break;
             } catch (modelErr: any) {
               lastError = modelErr;
-              const errMsg = modelErr?.message || String(modelErr);
-              if (errMsg.includes('RESOURCE_EXHAUSTED') || modelErr?.status === 429) {
-                console.warn(`Modelo ${modelName} excedeu cota de requisições, tentando modelo alternativo...`);
-                continue;
-              }
-              throw modelErr;
+              console.warn(`Modelo ${modelName} indisponível ou falhou, tentando modelo alternativo...`);
+              continue;
             }
           }
 
